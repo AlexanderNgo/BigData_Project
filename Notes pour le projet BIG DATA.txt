@@ -1,0 +1,36 @@
+3 grandes phases : 1) Récupération, traitement des données 	2) Stockage des données dans la BDD de manière cohérente	3) Analyse, visualisation, prédiction
+
+Langage utilisé : Python, librairie pandas matplotlib etc pour traitement des données, et le SGBD -> mySQL (choix arbitraires) car données structurées,on part sur du SQL et pas du noSQL
+
+Phase 1) Données récupérées sur le site météo france format csv entre 40K ou 1M lignes
+Objectif phase 1) : 
+- Data Cleaning : 
+			- Réduire le bruit = supprimé les valeurs aberrantes, s'occuper des valeurs null ou absente, supprimer les colonnes (attributs) non utiles pour l'analyse futur, tester l'indépendance/la corrélation entre les attributs
+
+Réduction de bruit : les valeurs null ou absente on peut les remplacer par une variable précisant qu'on ne sait pas "Ex : Unknown" ou faire la moyenne des valeurs pour en déduire cette valeur manquante ou faire un modèle de prédiction pour prédire la valeur
+
+Corrélation : 	-Calcul classique de corrélation avec les vecteurs propre, matrice propre etc 
+		-transformation de CHI pour tester l'indépendance 
+		- Se renseigner sur la météo en générale pour savoir (sans faire de calcul) quelles variables sont utiles ou corrélées etc
+
+Pour les missing values, regarder quel type de missing values c'est, càd si on détecte pas un pattern régulier dans les endroits où y'a des valeurs manquantes ou bien si les missing values sont placés de facon aléatoire
+notions de Imputation Analysis ca veut dire prédire/calculer la valeur manquante à partir des données qu'on a. Plusieurs techniques : régression linéaire en faisant une fonction liant les variables de départ X vers la variable a prédire Y, KNN plus proche voisin, faire la médiane ou la moyenne, ou 4e faire un modèle d'apprentissage. 
+
+Pour les outliers, facile de les repérer quand on fait des analyse graphique ex Boxplot, ce sont les valeurs qui sont trèèès éloigné des autres valeurs qui sont eux regroupés. Méthodes pour gérer les outliers : Trimming (mais donne pas de bon résultat quand on lutilise) consiste à simplementer retirer les outliers du dataset car ca peut crée des biais, Winsorization = remplacer les outliers par les valeurs max et min (sans compter ceux des outliers), ou soit les méthodes utilisé pr les missing values KNN, moyenne/médiane, régression, bining/discretization.
+
+Séparation du dataset en sous table : (Correct au niveau du dataset CSV)
+-Table "Localisation station météorologique" : Date,region (choisir code ou nom),département (choisir code ou nom),communes (choisir code ou nom),etat du sol, ID OMM station, Coordonnees,, EPCI (choisir code ou nom),mois de l'annee
+-Table "MEsure météorologique" (toutes les données qui permettent de mesurer) : Date, ID OMM STATION,pression au niv de la mer,variation pression en 24h,direction du vent moyen,vitesse du vent moyen,température en °C,point de rosée,humidité,nébulosité total,pression station, niv barométrique, témp. maximale en 24h, témp. minimal en 24h, précipitation dans les 24 derniers...,rafale sur les 10 derniers min,etat du sol,
+-Table "prévision météorologique" (toutes les données qui permettent de prévoir, donc normalement moins d'attribut que la table Mesure): Date,ID OMM STATION,Pression au niv dla mer, variation pression 24h, direction du vent moyen,vitesse du vent moyen, température en °C,humidité,nébulosité total, pression station, niv barométrique,
+
+
+3) - Utilisation des wavelets (ou cf la transformée de fourrier 2e solution) pour analyser les times séries. Grace a ca on peut prédire les nouvelles valeurs, en regardant la dépendance entre les variables et trouver des motifs généraux ou fin (= plus en détail). Conséquence de ça = ressemble à une acp donc réduit la dimension, réduit le bruit.
+principe : 2 décomposition : 1 cas générale on fait des approximations donc on obtient des grandes tendances motifs généraux et le 2e c'est une décomposition plus en détail.
+Utilisation de filtre passe bas pour pour les grandes tendances et passes haut pour + de détail
+plusieurs type de wavelets (à étudier ...)
+
+
+liens pour les doc :
+- https://royalsocietypublishing.org/doi/epdf/10.1098/rsta.1999.0445 : pour les wavelets time series analysis
+- https://ksiresearch.org/seke/seke18paper/seke18paper_152.pdf : pour les ETL en générale (PAS BON TROP COURT 2 PAGE)
+-https://ekja.org/upload/pdf/kjae-70-407.pdf : pour la data preparation/cleaning
